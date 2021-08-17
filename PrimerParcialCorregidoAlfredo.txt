@@ -1,0 +1,545 @@
+Pregunta 1
+
+10 puntos
+
+Crear y mostrar una lista simplemente enlazada con los siguientes datos
+
+ año de nacimiento
+ peso 
+ altura               
+La carga termina cuando el año de nacimiento es 0.
+
+ 
+
+Generar una nueva lista con el año de nacimiento y el índice de masa corporal. Este se calcula como peso/(altura*altura).
+Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el año de nacimiento y en el indice un 1.
+Generar otra lista con año de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El índice de maso corporal debe ser mayor a 25 para tener sobrepreso.
+Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.
+
+
+Mostrar todas las listas en cada caso.
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct lista {
+    int anio;
+    float peso;
+    float altura;
+    struct lista *sig;
+} nodo;
+
+typedef struct lista1 {
+    int anio;
+    float indiceMasa;
+    struct lista1 *sig;
+} nodol;
+
+typedef struct lista2 {
+    int anio;
+    float peso;
+    float altura;
+    struct lista2 *sig;
+} nodoll;
+
+
+nodo* insertarOKnodo(nodo *q,int anio,float peso, float altura) {
+    nodo *aux;
+    aux=(nodo *)malloc(sizeof(nodo));
+
+    aux->anio=anio;
+    aux->peso=peso;
+    aux->altura=altura;
+
+    aux->sig=q;
+    q=aux;
+    return q;
+}
+
+void crear (nodo *registro) {
+    printf(" ingresar anio nacimiento");
+    scanf("%d",&registro->anio);
+
+    if (registro->anio==0) {
+        registro->sig=NULL;
+    } else {
+        printf(" ingresar peso");
+        scanf("%f",&registro->peso);
+        printf(" ingresar altura");
+        scanf("%f",&registro->altura);
+        registro->sig=(nodo*)malloc(sizeof(nodo));
+        crear (registro->sig);
+    }
+}
+
+void mostrar (nodo *registro) {
+    if (registro->sig !=NULL) {
+        printf ("fecha nacimiento (%d)",registro->anio);
+        printf ("peso(%4.2f)",registro->peso);
+        printf ("altura(%4.2f)\n",registro->altura);
+        mostrar (registro->sig);
+    }
+    return;
+}
+
+
+
+void generar(nodo*p,nodol*q) {
+    while (p->sig!=NULL) {
+        printf("entre");
+        q->anio=p->anio;
+        q->indiceMasa=p->peso/(p->altura*p->altura);
+        q->sig=(nodol*)malloc(sizeof(nodol));
+        q=q->sig;
+        p=p->sig;
+    }
+    q->sig=NULL;
+}
+
+void mostrar1 (nodol *q) {
+    if (q->sig !=NULL) {
+        printf ("anioNaci(%d)",q->anio);
+        printf ("incice(%4.2f)\n",q->indiceMasa);
+        mostrar1 (q->sig);
+    }
+    return;
+}
+
+nodo* eliminar1(nodo* p,nodol*q) {
+    nodo *aux;
+    while(q->indiceMasa<25 && (p->anio==1960 || p->anio==1970)) { //condicion de eliminacion
+        aux=p->sig;
+        free(p);
+        p=aux;
+        q = q->sig;
+    }
+    return p;
+}
+void eliminar2(nodo* p,nodol*q) {
+    nodo *aux;
+    while(p->sig!=NULL&& p->sig->sig!=NULL) {
+        if(q->indiceMasa<25 && (p->anio==1960 || p->anio==1970)) { //condicion de eliminacion
+            aux=p->sig->sig;
+            free(p->sig);
+            p->sig=aux;
+            q=q->sig;
+        } else {
+            p=p->sig;
+            q=q->sig;
+        }
+    }
+}
+
+/*
+Generar otra lista con año de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El índice de maso corporal debe ser mayor a 25 para tener sobrepreso.
+*/
+
+void generar1(nodo*p,nodol*q,nodoll*r) {
+    while (p->sig!=NULL && q->sig!=NULL) { // voy a recorrer p y q para generar r
+        if (q->indiceMasa>25) {
+            printf("entre");
+            r->anio=p->anio;
+            r->peso=p->peso;
+            r->altura=p->altura;
+            r->sig=(nodoll*)malloc(sizeof(nodoll));
+            r=r->sig;
+        }
+        p=p->sig;
+        q=q->sig;
+    }
+    r->sig=NULL;
+}
+
+
+void mostrar2 (nodoll *registro) {
+    if (registro->sig !=NULL) {
+        printf ("fecha nacimiento (%d)",registro->anio);
+        printf ("peso(%5.2f)",registro->peso);
+        printf ("altura(%5.2f)\n",registro->altura);
+        mostrar2 (registro->sig);
+    }
+    return;
+}
+/* -c)Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el año de nacimiento y en el indice un 1.*/
+nodol* insertar1(nodol *q) {
+    nodol *aux;
+
+    if(q->indiceMasa<24) { //condicion de insercion
+
+        aux=(nodol *)malloc(sizeof(nodol));
+        aux->anio=q->anio;//valor a insertar
+        aux->indiceMasa=1;
+        aux->sig=q->sig;
+        q->sig=aux;
+    }
+    return q;
+}
+
+void insertar2 (nodol *q) {
+    nodol *aux;
+    while(q->sig!=NULL) {
+        if(q->indiceMasa<24&&q->indiceMasa!=1) { //condicion de insercion            
+            aux=(nodol *)malloc(sizeof(nodol));
+            aux->anio=q->anio;//valor a insertar
+            aux->indiceMasa=1;
+            aux->sig=q->sig;
+            q->sig=aux;
+            q=q->sig;
+        }
+        q=q->sig;
+    }
+}
+
+int main (void) {
+    nodo*p=NULL;
+    p=(nodo*)malloc(sizeof(nodo));
+    p=insertarOKnodo(p,1960,70,1.8);
+    p=insertarOKnodo(p,1968,170,1.9);
+    p=insertarOKnodo(p,1969,17,2.0);
+    p=insertarOKnodo(p,1963,200,1.6);
+    p=insertarOKnodo(p,1966,99,1.5);
+    p=insertarOKnodo(p,1966,70,1.9);
+    p=insertarOKnodo(p,1960,60,1.7);
+
+
+//A----------------------------------------------------------------------------------------
+    //crear(p);
+    //printf("\n primera lista --------------\n");
+    //mostrar(p);
+    //printf("\nfin primera lista");
+// fin de A----------------------------------------------------------------------------------------
+
+    /*
+    //-------------------------------------------------------------------------------------------------
+    -b)Generar una nueva lista con el año de nacimiento y el índice de masa corporal. Este se calcula como peso/(altura*altura).
+    */
+
+//b
+    nodol*q=NULL;
+    q=(nodol*)malloc(sizeof(nodol));
+    generar(p,q);
+    printf("\n");
+    printf("\n  lista con indice de masa --------------\n");
+    mostrar1(q);
+    printf("\n  fin lista con indice de masa --------------\n");
+    printf("\n");
+//----------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+
+    //-c)Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el año de nacimiento y en el indice un 1.
+    // trabajo con (nodol y *q)//---------------------------------------------------------------
+
+    printf("\n  lista  con nodo insertadoinsertada --------------\n");
+    q=insertar1(q);
+    insertar2(q->sig);
+    mostrar1(q);
+    printf("\n  fin lista con nodo insertado --------------\n");
+
+
+
+
+//----------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+
+    /-d)Generar otra lista con año de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El índice de maso corporal debe ser mayor a 25 para tener sobrepreso./
+
+    nodoll*r=NULL;
+    r=(nodoll*)malloc(sizeof(nodoll));
+    generar1(p,q,r);
+
+    printf("\nlista con año de nacimiento, peso y altura  IMC>25-------------\n");
+
+    mostrar2(r);
+    printf("\nlista con año de nacimiento, peso y altura  IMC>25-------------\n");
+//-------------------------------------------------------------------------------------------------
+
+
+    /*
+    -e)Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.
+    */
+
+
+    p=eliminar1(p,q);
+    eliminar2(p,q);
+    printf("\n-Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\n");
+    mostrar(p);
+    printf("\n-FINNNNNNNNNNNN Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\n")  ;
+//---------------------------------------------------------------------------------------------
+    return 0;
+}
+
+
+
+/*
+a)Crear y mostrar una lista simplemente enlazada con los siguientes datos
+
+ año de nacimiento
+ peso
+ altura
+La carga termina cuando el año de nacimiento es 0.
+
+
+
+-b)Generar una nueva lista con el año de nacimiento y el índice de masa corporal. Este se calcula como peso/(altura*altura).
+
+-c)Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el año de nacimiento y en el indice un 1.
+
+-d)Generar otra lista con año de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El índice de maso corporal debe ser mayor a 25 para tener sobrepreso.
+
+-e)Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct lista{
+	int num;
+	struct lista *sig;
+ }nodo;
+
+ int main(void) {
+  printf("Hello World\n");
+  return 0;
+}
+
+void crear (nodo *registro,int cont)
+{
+
+    scanf("%d",&registro->num);
+
+    if (registro->num==0)
+        registro->sig=NULL;
+    else
+	{
+        registro->sig=(nodo*)malloc(sizeof(nodo));
+        crear (registro->sig,cont);
+
+	}
+	return;
+}
+
+void mostrar (nodo *registro)
+{
+    if (registro->sig !=NULL)
+	{
+        printf ("%d\n",registro->num);
+        mostrar (registro->sig);
+	}
+	return;
+}
+
+nodo* insertar1(nodo *p)
+{
+    nodo *aux;
+    if()//condicion de insercion
+    {
+        aux=(nodo *)malloc(sizeof(nodo));
+        aux->num=0;//valor a insertar
+        aux->sig=p;
+        p=aux;
+    }
+    return p;
+}
+
+void insertar2 (nodo *p)
+{nodo *aux;
+    while(p->sig!=NULL)
+    {
+        if() //condicion de insercion
+        {
+            aux=(nodo *)malloc(sizeof(nodo));
+            aux->num=0;//valor a insertar
+            aux->sig=p->sig;
+            p->sig=aux;
+
+        }
+        p=p->sig;
+    }
+}
+
+nodo* eliminar1(nodo* p)
+{nodo *aux;
+    while()//condicion de eliminacion
+    {
+        aux=p->sig;
+        free(p);
+        p=aux;
+
+    }
+    return p;
+}
+void eliminar2(nodo* p)
+{nodo *aux;
+    while(p->sig!=NULL&& p->sig->sig!=NULL)
+    {
+        if()//condicion de eliminacion
+        {
+            aux=p->sig->sig;
+            free(p->sig);
+            p->sig=aux;
+        }
+        else
+        {
+            p=p->sig;
+        }
+    }
+
+}
+
+
+
+
+
+
+
+void ordenar(nodo* actual)
+{
+     nodo *siguiente;
+     nodo aux=(nodo)malloc(sizeof(nodo));
+     while(actual->sig != NULL)
+     {
+          siguiente = actual->sig;
+          while(siguiente->sig !=NULL)
+          {
+               if(actual->num_cuenta > siguiente->num_cuenta)
+               {
+                   aux->x=siguiente->x;
+                   siguiente->x=actual->x
+                   actual->x=aux->x
+               }
+               siguiente = siguiente->sig;
+          }
+          actual = actual->sig;
+     }
+};
+
+void generar(nodo*r,nodol*n)
+{
+while (r->sig!=NULL)
+{
+    if((r->saldoCajaAhorro)>10)
+    {
+      n->saldosPares=r->saldos;
+      n->sig=(nodol*)malloc(sizeof(nodol));
+      n=n->sig;
+    }
+      r=r->sig;
+  }
+  n->sig=NULL;
+}
+
+int sumaNodos(nodo*p)
+{
+  int sumador=0;
+  while (p->sig!=NULL)
+  {
+  sumador=sumador+p->saldoCajaAhorro;
+  p=p->sig;
+  }
+  return sumador;
+}
+int maximo(nodo*p)
+{
+  int max =p->num;
+  while(p->sig!=NULL)
+  {
+
+   if(p->num>max)
+   {
+    // 'a'es el valor que se va moviendo y 'b' valor estatico
+      max=p->num;
+
+    }
+    p = p->sig;
+  }nodo* insertar1Ordenado(nodo *p,int num) {
+    //ORDENADO POR NUMERO DE CUENTA
+    nodo *aux;
+
+    if(num < p->num) {
+        aux=(nodo *)malloc(sizeof(nodo));
+        aux->num = num;
+        aux->sig=p;
+        p=aux;
+    }
+    return p;
+};
+
+//                                                               3
+void insertar2EnPos (nodo *p,int num,int posIns) {
+    nodo *aux;
+    int parar = 0;
+    while(p->sig!=NULL && !parar) {
+        if(  posIns == 1) { //condicion de insercion ORDENADO POR NUMERO DE CLIENTE
+            aux=(nodo *)malloc(sizeof(nodo));
+            aux->num = num;
+            aux->sig=p->sig;
+            p->sig=aux;
+            p=p->sig->sig;
+            parar = 1;
+        } else {
+            p=p->sig;
+            posIns = posIns - 1;
+        }
+    }
+}
+
+
+void insertar2Ordenado (nodo *p,int num) {
+    nodo *aux;
+    int parar = 0;
+    while(p->sig!=NULL && !parar) {
+        if(  num < p->sig->num) { //condicion de insercion ORDENADO POR NUMERO DE CLIENTE
+            aux=(nodo *)malloc(sizeof(nodo));
+            aux->num = num;
+            aux->sig=p->sig;
+            p->sig=aux;
+            p=p->sig->sig;
+            parar = 1;
+        } else {
+            p=p->sig;
+        }
+    }
+}
+
+nodo* insertarOrdenado(nodo*p,int num) {
+    nodo* aux;
+
+    if(p->sig != NULL && num <  p->num ) {
+        aux = (nodo*)malloc(sizeof(nodo));
+        aux->num = num;
+        aux->sig = p;
+        p = aux->sig;
+    } else {
+        insertar2Ordenado(p,num);
+    }
+    return p;
+}
+
+
+*/
