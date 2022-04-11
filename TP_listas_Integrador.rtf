@@ -1,0 +1,294 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang3082{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang10 /*\par
+a)Crear y mostrar una lista simplemente enlazada con los siguientes datos\par
+\par
+ a\'f1o de nacimiento\par
+ peso\par
+ altura\par
+La carga termina cuando el a\'f1o de nacimiento es 0.\par
+\par
+\par
+\par
+-b)Generar una nueva lista con el a\'f1o de nacimiento y el \'edndice de masa corporal. Este se calcula como peso/(altura*altura).\par
+\par
+-c)Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el a\'f1o de nacimiento y en el indice un 1.\par
+\par
+-d)Generar otra lista con a\'f1o de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El \'edndice de maso corporal debe ser mayor a 25 para tener sobrepreso.\par
+\par
+-e)Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\par
+*/\par
+\par
+Crear y mostrar una lista simplemente enlazada con los siguientes datos\par
+\par
+ a\'f1o de nacimiento\par
+ peso \par
+ altura               \par
+La carga termina cuando el a\'f1o de nacimiento es 0.\par
+\par
+ \par
+\par
+Generar una nueva lista con el a\'f1o de nacimiento y el \'edndice de masa corporal. Este se calcula como peso/(altura*altura).\par
+Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el a\'f1o de nacimiento y en el indice un 1.\par
+Generar otra lista con a\'f1o de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El \'edndice de maso corporal debe ser mayor a 25 para tener sobrepreso.\par
+Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\par
+\par
+\par
+Mostrar todas las listas en cada caso.\par
+#include <stdio.h>\par
+#include <stdlib.h>\par
+\par
+typedef struct lista \{\par
+    int anio;\par
+    float peso;\par
+    float altura;\par
+    struct lista *sig;\par
+\} nodo;\par
+\par
+typedef struct lista1 \{\par
+    int anio;\par
+    float indiceMasa;\par
+    struct lista1 *sig;\par
+\} nodol;\par
+\par
+typedef struct lista2 \{\par
+    int anio;\par
+    float peso;\par
+    float altura;\par
+    struct lista2 *sig;\par
+\} nodoll;\par
+\par
+\par
+nodo* insertarOKnodo(nodo *q,int anio,float peso, float altura) \{\par
+    nodo *aux;\par
+    aux=(nodo *)malloc(sizeof(nodo));\par
+\par
+    aux->anio=anio;\par
+    aux->peso=peso;\par
+    aux->altura=altura;\par
+\par
+    aux->sig=q;\par
+    q=aux;\par
+    return q;\par
+\}\par
+\par
+void crear (nodo *registro) \{\par
+    printf(" ingresar anio nacimiento");\par
+    scanf("%d",&registro->anio);\par
+\par
+    if (registro->anio==0) \{\par
+        registro->sig=NULL;\par
+    \} else \{\par
+        printf(" ingresar peso");\par
+        scanf("%f",&registro->peso);\par
+        printf(" ingresar altura");\par
+        scanf("%f",&registro->altura);\par
+        registro->sig=(nodo*)malloc(sizeof(nodo));\par
+        crear (registro->sig);\par
+    \}\par
+\}\par
+\par
+void mostrar (nodo *registro) \{\par
+    if (registro->sig !=NULL) \{\par
+        printf ("fecha nacimiento (%d)",registro->anio);\par
+        printf ("peso(%4.2f)",registro->peso);\par
+        printf ("altura(%4.2f)\\n",registro->altura);\par
+        mostrar (registro->sig);\par
+    \}\par
+    return;\par
+\}\par
+\par
+\par
+\par
+void generar(nodo*p,nodol*q) \{\par
+    while (p->sig!=NULL) \{\par
+        printf("entre");\par
+        q->anio=p->anio;\par
+        q->indiceMasa=p->peso/(p->altura*p->altura);\par
+        q->sig=(nodol*)malloc(sizeof(nodol));\par
+        q=q->sig;\par
+        p=p->sig;\par
+    \}\par
+    q->sig=NULL;\par
+\}\par
+\par
+void mostrar1 (nodol *q) \{\par
+    if (q->sig !=NULL) \{\par
+        printf ("anioNaci(%d)",q->anio);\par
+        printf ("incice(%4.2f)\\n",q->indiceMasa);\par
+        mostrar1 (q->sig);\par
+    \}\par
+    return;\par
+\}\par
+\par
+nodo* eliminar1(nodo* p,nodol*q) \{\par
+    nodo *aux;\par
+    while(q->indiceMasa<25 && (p->anio==1960 || p->anio==1970)) \{ //condicion de eliminacion\par
+        aux=p->sig;\par
+        free(p);\par
+        p=aux;\par
+        q = q->sig;\par
+    \}\par
+    return p;\par
+\}\par
+void eliminar2(nodo* p,nodol*q) \{\par
+    nodo *aux;\par
+    while(p->sig!=NULL&& p->sig->sig!=NULL) \{\par
+        if(q->indiceMasa<25 && (p->anio==1960 || p->anio==1970)) \{ //condicion de eliminacion\par
+            aux=p->sig->sig;\par
+            free(p->sig);\par
+            p->sig=aux;\par
+            q=q->sig;\par
+        \} else \{\par
+            p=p->sig;\par
+            q=q->sig;\par
+        \}\par
+    \}\par
+\}\par
+\par
+/*\par
+Generar otra lista con a\'f1o de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El \'edndice de maso corporal debe ser mayor a 25 para tener sobrepreso.\par
+*/\par
+\par
+void generar1(nodo*p,nodol*q,nodoll*r) \{\par
+    while (p->sig!=NULL && q->sig!=NULL) \{ // voy a recorrer p y q para generar r\par
+        if (q->indiceMasa>25) \{\par
+            printf("entre");\par
+            r->anio=p->anio;\par
+            r->peso=p->peso;\par
+            r->altura=p->altura;\par
+            r->sig=(nodoll*)malloc(sizeof(nodoll));\par
+            r=r->sig;\par
+        \}\par
+        p=p->sig;\par
+        q=q->sig;\par
+    \}\par
+    r->sig=NULL;\par
+\}\par
+\par
+\par
+void mostrar2 (nodoll *registro) \{\par
+    if (registro->sig !=NULL) \{\par
+        printf ("fecha nacimiento (%d)",registro->anio);\par
+        printf ("peso(%5.2f)",registro->peso);\par
+        printf ("altura(%5.2f)\\n",registro->altura);\par
+        mostrar2 (registro->sig);\par
+    \}\par
+    return;\par
+\}\par
+/* -c)Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el a\'f1o de nacimiento y en el indice un 1.*/\par
+nodol* insertar1(nodol *q) \{\par
+    nodol *aux;\par
+\par
+    if(q->indiceMasa<24) \{ //condicion de insercion\par
+\par
+        aux=(nodol *)malloc(sizeof(nodol));\par
+        aux->anio=q->anio;//valor a insertar\par
+        aux->indiceMasa=1;\par
+        aux->sig=q->sig;\par
+        q->sig=aux;\par
+    \}\par
+    return q;\par
+\}\par
+\par
+void insertar2 (nodol *q) \{\par
+    nodol *aux;\par
+    while(q->sig!=NULL) \{\par
+        if(q->indiceMasa<24&&q->indiceMasa!=1) \{ //condicion de insercion            \par
+            aux=(nodol *)malloc(sizeof(nodol));\par
+            aux->anio=q->anio;//valor a insertar\par
+            aux->indiceMasa=1;\par
+            aux->sig=q->sig;\par
+            q->sig=aux;\par
+            q=q->sig;\par
+        \}\par
+        q=q->sig;\par
+    \}\par
+\}\par
+\par
+int main (void) \{\par
+    nodo*p=NULL;\par
+    p=(nodo*)malloc(sizeof(nodo));\par
+    p=insertarOKnodo(p,1960,70,1.8);\par
+    p=insertarOKnodo(p,1968,170,1.9);\par
+    p=insertarOKnodo(p,1969,17,2.0);\par
+    p=insertarOKnodo(p,1963,200,1.6);\par
+    p=insertarOKnodo(p,1966,99,1.5);\par
+    p=insertarOKnodo(p,1966,70,1.9);\par
+    p=insertarOKnodo(p,1960,60,1.7);\par
+\par
+\par
+//A----------------------------------------------------------------------------------------\par
+    //crear(p);\par
+    //printf("\\n primera lista --------------\\n");\par
+    //mostrar(p);\par
+    //printf("\\nfin primera lista");\par
+// fin de A----------------------------------------------------------------------------------------\par
+\par
+    /*\par
+    //-------------------------------------------------------------------------------------------------\par
+    -b)Generar una nueva lista con el a\'f1o de nacimiento y el \'edndice de masa corporal. Este se calcula como peso/(altura*altura).\par
+    */\par
+\par
+//b\par
+    nodol*q=NULL;\par
+    q=(nodol*)malloc(sizeof(nodol));\par
+    generar(p,q);\par
+    printf("\\n");\par
+    printf("\\n  lista con indice de masa --------------\\n");\par
+    mostrar1(q);\par
+    printf("\\n  fin lista con indice de masa --------------\\n");\par
+    printf("\\n");\par
+//----------------------------------------------------------------------------\par
+//--------------------------------------------------------------------------\par
+\par
+//----------------------------------------------------------------------------\par
+\par
+    //-c)Insertar en esta lista despues de cada nodo donde el indice de masa corporal sea menor a 24, un nuevo nodo con el a\'f1o de nacimiento y en el indice un 1.\par
+    // trabajo con (nodol y *q)//---------------------------------------------------------------\par
+\par
+    printf("\\n  lista  con nodo insertadoinsertada --------------\\n");\par
+    q=insertar1(q);\par
+    insertar2(q->sig);\par
+    mostrar1(q);\par
+    printf("\\n  fin lista con nodo insertado --------------\\n");\par
+\par
+\par
+\par
+\par
+//----------------------------------------------------------------------------\par
+//--------------------------------------------------------------------------\par
+\par
+\par
+    /-d)Generar otra lista con a\'f1o de nacimiento, peso y altura con aquellas personas que tienen sobrepeso. El \'edndice de maso corporal debe ser mayor a 25 para tener sobrepreso./\par
+\par
+    nodoll*r=NULL;\par
+    r=(nodoll*)malloc(sizeof(nodoll));\par
+    generar1(p,q,r);\par
+\par
+    printf("\\nlista con a\'f1o de nacimiento, peso y altura  IMC>25-------------\\n");\par
+\par
+    mostrar2(r);\par
+    printf("\\nlista con a\'f1o de nacimiento, peso y altura  IMC>25-------------\\n");\par
+//-------------------------------------------------------------------------------------------------\par
+\par
+\par
+    /*\par
+    -e)Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\par
+    */\par
+\par
+\par
+    p=eliminar1(p,q);\par
+    eliminar2(p,q);\par
+    printf("\\n-Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\\n");\par
+    mostrar(p);\par
+    printf("\\n-FINNNNNNNNNNNN Eliminar de la lista original aquellas personas que nacieron en 1960 y 1970 y no tiene sobrepeso.\\n")  ;\par
+//---------------------------------------------------------------------------------------------\par
+    return 0;\par
+\}\par
+\par
+\par
+\par
+\par
+}
+ 
